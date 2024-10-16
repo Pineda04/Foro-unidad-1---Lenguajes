@@ -146,6 +146,9 @@ class JuegoUno
   def iniciar
     loop do
       jugador_actual = @jugadores[@turno_actual]
+
+      system("clear") || system("cls")
+
       puts "\nCarta en la pila: #{@carta_superior.mostrar}"
       puts "\nTurno de: #{jugador_actual.nombre}"
       puts "Tus cartas:\n#{jugador_actual.mostrar_mano}"
@@ -186,5 +189,19 @@ class JuegoUno
 
   def siguiente_jugador
     @jugadores[(@turno_actual + @direccion) % @jugadores.length]
-  end
+  end
 end
+
+# Iniciar el juego 
+puts "¿Cuántos jugadores participarán?"
+cantidad_jugadores = gets.chomp.to_i
+
+jugadores = []
+cantidad_jugadores.times do |i|
+  puts "Ingresa el nombre del jugador #{i + 1}:"
+  nombre = gets.chomp
+  jugadores << nombre
+end
+
+juego = JuegoUno.new(jugadores)
+juego.iniciar
