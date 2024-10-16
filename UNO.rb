@@ -58,4 +58,37 @@ class CartaMasDos < Carta
   end
 end
 
-# Vos haces la logica del mazo si queres
+# Clase para representar el mazo de cartas
+class Mazo
+  attr_reader :cartas
+
+  def initialize
+    @cartas = []
+    crear_cartas
+    barajar
+  end
+
+  def crear_cartas
+    colores = ["Rojo", "Verde", "Azul", "Amarillo"]
+    valores = (0..9).to_a
+
+    colores.each do |color|
+      valores.each do |valor|
+        @cartas << Carta.new(color, valor)
+        @cartas << Carta.new(color, valor) unless valor == 0
+      end
+      # Crear cartas especiales
+      @cartas << CartaReversa.new(color)
+      @cartas << CartaSaltar.new(color)
+      @cartas << CartaMasDos.new(color)
+    end
+  end
+
+  def barajar
+    @cartas.shuffle!
+  end
+
+  def sacar_carta
+    @cartas.pop
+ end
+end
