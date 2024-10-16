@@ -92,3 +92,32 @@ class Mazo
     @cartas.pop
  end
 end
+
+# Clase para el jugador
+class Jugador
+  attr_reader :nombre, :mano
+
+  def initialize(nombre)
+    @nombre = nombre
+    @mano = []
+  end
+
+  def tomar_carta(carta)
+    @mano << carta
+  end
+
+  def jugar_carta(indice, juego)
+    carta = @mano.delete_at(indice)
+    puts "#{@nombre} juega #{carta.mostrar}"
+    carta.ejecutar_efecto(juego)
+    carta
+  end
+
+  def mostrar_mano
+    @mano.map.with_index { |carta, i| "#{i}: #{carta.mostrar}" }.join("\n")
+  end
+
+  def tiene_carta_jugable?(carta_superior)
+    @mano.any? { |carta| carta.se_puede_jugar?(carta_superior) }
+  end
+end
