@@ -121,3 +121,70 @@ class Jugador
     @mano.any? { |carta| carta.se_puede_jugar?(carta_superior) }
   end
 end
+
+# Clase para representar el juego Uno
+class JuegoUno
+  attr_reader :mazo
+
+  def initialize(jugadores)
+    @mazo = Mazo.new
+    @jugadores = jugadores.map { |nombre| Jugador.new(nombre) }
+    @turno_actual = 0
+    @direccion = 1 # 1 para avanzar, -1 para reversa
+    @carta_superior = @mazo.sacar_carta
+    repartir_cartas
+  end
+
+  def repartir_cartas
+    7.times do
+      @jugadores.each do |jugador|
+        jugador.tomar_carta(@mazo.sacar_carta)
+      end
+    end
+  end
+
+  def iniciar
+    loop do
+      jugador_actual = @jugadores[@turno_actual]
+      puts "\nCarta en la pila: #{@carta_superior.mostrar}"
+      puts "\nTurno de: #{jugador_actual.nombre}"
+      puts "Tus cartas:\n#{jugador_actual.mostrar_mano}"
+
+      if jugador_actual.tiene_carta_jugable?(@carta_superior)
+        puts "Selecciona una carta para jugar (0 a #{jugador_actual.mano.size - 1}):"
+        indice = gets.chomp.to_i
+        while indice < 0 || indice >= jugador_actual.mano.size || !jugador_actual.mano[indice].se_puede_jugar?(@carta_superior)
+          puts "Carta inválida, elige otra:"
+          indice = gets.chomp.to_i
+        end
+        @carta_superior = jugador_actual.jugar_carta(indice, self)
+      else
+        puts "#{jugador_actual.nombre} no tiene cartas jugables, toma una carta del mazo."
+        jugador_actual.tomar_carta(@mazo.sacar_carta)
+      end
+
+      if jugador_actual.mano.empty?
+        puts "#{jugador_actual.nombre} ha ganado el juego. ¡Felicidades!"
+        break
+      end
+
+      siguiente_turno
+    end
+  end
+
+  def cambiar_direccion
+    @direccion *= -1
+  end
+
+  def saltar_turno
+    siguiente_turno
+  end
+
+  def siguiente_turno
+    @turno_actual = (@turno_actual + @direccion) % @jugadores.length
+  end
+
+  def siguiente_jugador
+    @jugadores[(@turno_actual + @direccion) % @jugadores.length]
+  end
+end
